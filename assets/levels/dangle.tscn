@@ -1,0 +1,108 @@
+[gd_scene load_steps=5 format=2]
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 0.145805, 1, 0.432757 )
+
+[sub_resource type="CubeMesh" id=2]
+
+[sub_resource type="PlaneMesh" id=3]
+
+[sub_resource type="BoxShape" id=4]
+extents = Vector3( 5.28016, 0.053238, 3.9916 )
+
+[node name="Spatial" type="Spatial"]
+
+[node name="Spatial" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.4858, 0 )
+
+[node name="RigidBody" type="RigidBody" parent="Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5368, 1.32602, 0 )
+collision_layer = 0
+custom_integrator = true
+sleeping = true
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial/RigidBody"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Spatial/RigidBody"]
+mesh = SubResource( 2 )
+material/0 = null
+
+[node name="Generic6DOFJoint" type="Generic6DOFJoint" parent="Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.616678, -0.146824, 0 )
+nodes/node_a = NodePath("../RigidBody")
+nodes/node_b = NodePath("../RigidBody2")
+linear_spring_x/stiffness = 1.0
+linear_spring_x/damping = 1.0
+linear_spring_x/equilibrium_point = 1.0
+linear_limit_y/upper_distance = 1.0
+linear_limit_y/lower_distance = -1.0
+linear_limit_y/softness = 0.01
+linear_spring_y/stiffness = 1.0
+angular_limit_y/enabled = false
+linear_motor_z/target_velocity = 20.0
+linear_motor_z/force_limit = 10000.0
+angular_motor_z/target_velocity = 2.0
+
+[node name="RigidBody2" type="RigidBody" parent="Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.632815, -2.6024, 0 )
+collision_layer = 0
+collision_mask = 0
+can_sleep = false
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial/RigidBody2"]
+transform = Transform( 1, 0, 0, 0, 1.99613, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Spatial/RigidBody2"]
+transform = Transform( 0.115598, 0, 0, 0, 1.98973, 0, 0, 0, 0.4, 0, 0, 0 )
+mesh = SubResource( 2 )
+material/0 = null
+
+[node name="Generic6DOFJoint2" type="Generic6DOFJoint" parent="Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.616678, -4.95822, 0 )
+nodes/node_a = NodePath("../RigidBody2")
+nodes/node_b = NodePath("../RigidBody3")
+linear_spring_x/stiffness = 1.0
+linear_spring_x/damping = 1.0
+linear_spring_x/equilibrium_point = 1.0
+linear_limit_y/softness = 0.01
+linear_limit_y/damping = 0.01
+linear_spring_y/stiffness = 1.0
+angular_limit_y/upper_angle = 50.0
+angular_limit_y/lower_angle = 50.0
+linear_motor_z/target_velocity = 20.0
+linear_motor_z/force_limit = 10000.0
+angular_motor_z/target_velocity = 2.0
+
+[node name="RigidBody3" type="RigidBody" parent="Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.632815, -7.41379, 0 )
+collision_layer = 0
+mass = 10.0
+can_sleep = false
+
+[node name="CollisionShape" type="CollisionShape" parent="Spatial/RigidBody3"]
+transform = Transform( 1, 0, 0, 0, 1.99613, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Spatial/RigidBody3"]
+transform = Transform( 0.115598, 0, 0, 0, 1.98973, 0, 0, 0, 0.4, 0, 0, 0 )
+mesh = SubResource( 2 )
+material/0 = null
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.0667, 16.8202 )
+
+[node name="StaticBody" type="StaticBody" parent="."]
+
+[node name="MeshInstance" type="MeshInstance" parent="StaticBody"]
+transform = Transform( 5.21311, 0, 0, 0, 1, 0, 0, 0, 3.86795, 0, -0.0510755, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
+shape = SubResource( 4 )
+
+[node name="PinJoint" type="PinJoint" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16.503, -2.36043 )
+nodes/node_a = NodePath("../Spatial/RigidBody")

@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="SphereMesh" id=8]
+
+[node name="indicator" type="MeshInstance"]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -5.04198, 0.0178776, -9.65618 )
+mesh = SubResource( 8 )
+material/0 = null

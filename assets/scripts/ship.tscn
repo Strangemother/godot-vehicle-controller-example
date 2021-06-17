@@ -1,0 +1,335 @@
+[gd_scene load_steps=4 format=1]
+
+[sub_resource type="GDScript" id=1]
+
+script/source = "extends Sprite
+
+# class member variables go here, for example:
+# var a = 2
+# var b = \"textvar\"
+
+export var vectors = {
+	'position': Vector2(10, 10)
+	# in 2D, only the first 'x' is used - to make mapping easy,
+	# but this can be extended for two engine setup.
+	, 'rotation': Vector2(0, -1)
+	, 'speed': Vector2(0, 0)
+	}
+	
+var keymap = { 'left': ['speed', .08, 'y']
+	, 'right': ['speed', -.08, 'y']
+	, 'up': ['speed', -.03, 'x']
+	, 'down': ['speed', .1, 'x']
+	}
+	
+var skeys = {}
+var half_pi = PI / 180
+var distance_label
+
+var bullet = preload('bullet.tscn')
+var bullets = []
+var barrel_force = 1
+
+# factor for calibrating the distance ahead of the ship
+# With '1' - the ship stays fully locked.
+export(float) var forwarding_distance = 1.7
+export(float) var max_speed = 15
+export(Vector2) var screen_size
+export(Vector2) var screen_center
+export(float) var speed = 1
+export(float) var current_speed setget get_current_speed, set_current_speed
+
+
+func get_current_speed():
+	return vectors.speed.x or 0
+
+func set_current_speed(v):
+	vectors.speed.x = v 
+
+func _input(event):
+	for key in skeys:
+		if event.is_action_pressed('ui_%s' % key):
+			skeys[key] = true
+
+		if event.is_action_released('ui_%s' % key):
+			skeys[key] = false
+	
+	if event.is_action_pressed('game_shoot'):
+		fire_bullet()
+
+func fire_bullet():
+	print('FIRE')
+	var b = bullet.instance()
+	b.velocity = abs(vectors.speed.x) + barrel_force
+	b.set_pos(get_global_pos())
+	b.set_rot(get_rot())
+	bullets.append(b)
+	get_node(\"/root/scene\").add_child(b)
+
+func update_key_vectors():
+	for name in skeys:
+		if skeys[name]:
+			# position, X, += speed * -1
+			vectors[keymap[name][0]][keymap[name][2]] += speed * keymap[name][1]
+
+func update_bullets():
+	var i = 0
+	
+	for bullet in bullets:
+		var pos = bullet.get_pos()
+		var rot = bullet.get_rotd()
+		var _x = pos.x + sin( rot * -half_pi ) * bullet.velocity
+		var _y = pos.y - cos( rot * half_pi ) * bullet.velocity
+		var new_pos = Vector2(_x,_y)
+		if get_pos().distance_to(new_pos) > 300:
+			print('destroy', bullet)
+			bullets.remove(i)
+			bullet.destroy()
+		bullet.set_pos(new_pos)
+		i+=1
+
+func _process(delta):
+	update_key_vectors()
+	update_bullets()
+	var dis_x = (screen_center.x - vectors.position.x) 
+	var dis_y = (screen_center.y - vectors.position.y) 
+		# Quantize the rotation
+	var speed = vectors.speed.x
+	var rotation_step = vectors.speed.y * .7 + ( speed * .1)
+	vectors.rotation.x += rotation_step
+	# direction towards nose
+	var camera_forward_drift_x = -sin(vectors.rotation.x * half_pi) * forwarding_distance
+	var camera_forward_drift_y = -cos(vectors.rotation.x * half_pi) * forwarding_distance
+	
+	var x = vectors.position.x + (camera_forward_drift_x + sin(vectors.rotation.x * half_pi)) * speed
+	var y = vectors.position.y + (camera_forward_drift_y +  cos(vectors.rotation.x * half_pi)) * speed
+	
+	# Center motion to screen
+
+	var xa = dis_x * -(abs(max_speed - speed) * .0007)
+	var ya = dis_y * -.04
+	
+	vectors.position.x = x - xa
+	vectors.position.y = y - ya
+	
+	distance_label.set('text', '%s %s %s' % [speed, int(dis_x), int(dis_y)])
+	
+	var barrier = get_node(\"Polygon2D/barrier\").set_amount(abs((1024 / max_speed) * speed) * .3)
+	set_pos(vectors.position)
+	set_rot(vectors.rotation.x * PI / 180)
+	var flames = get_node(\"Polygon2D/flames\")
+	var fh = speed * -.1
+	if fh < .1:
+		fh = .1
+
+	if speed > .3:
+		speed = .3
+	
+	vectors.speed.x = speed
+	
+	var lyt = rotation_step * -.2 
+	
+	if abs(lyt) > 1.9:
+		lyt = 1.8
+		
+	flames.set_scale(Vector2(.4,fh))
+	flames.set_rot(lyt)
+	
+
+func create_keys():
+	for name in keymap:
+		skeys[name] = false
+
+func _ready():
+	# Called every time the node is added to the scene.
+	# Initialization here
+	vectors.position = get_pos()
+	screen_size = get_viewport().get_rect().size
+	screen_center = Vector2(screen_size.x * .5, screen_size.y * .5)
+	distance_label = get_node(\"/root/scene/dis_label\")
+	create_keys()
+	set_process(true)
+	set_process_input(true)
+"
+
+[sub_resource type="ColorRamp" id=3]
+
+offsets = FloatArray( 0, 0.0606061, 0.909091, 0.996633 )
+colors = ColorArray( 0, 0, 0, 1, 0.315552, 0.324965, 0.917969, 1, 1, 1, 1, 1, 0.867188, 0.867188, 0.867188, 0 )
+
+[sub_resource type="ColorRamp" id=2]
+
+offsets = FloatArray( 0.324042, 1 )
+colors = ColorArray( 0.972839, 0.982453, 0.984375, 0.374471, 0.0510353, 0.825208, 0.977149, 1 )
+
+[node name="Sprite" type="Sprite"]
+
+transform/pos = Vector2( 0, -17 )
+script/script = SubResource( 1 )
+vectors = {
+"position": Vector2( 10, 10 ),
+"rotation": Vector2( 0, -1 ),
+"speed": Vector2( 0, 0 )
+}
+forwarding_distance = 1.7
+max_speed = 15
+screen_size = null
+screen_center = null
+speed = 1
+current_speed = null
+
+[node name="Polygon2D" type="CollisionPolygon2D" parent="."]
+
+transform/pos = Vector2( 0.0748024, 9.3036 )
+build_mode = 0
+polygon = Vector2Array( -0.0748024, -10.3036, -10.0748, 19.6964, -0.0748024, 10.6964, 9.9252, 19.6964 )
+shape_range = Vector2( -1, -1 )
+trigger = false
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="barrier" type="Particles2D" parent="Polygon2D"]
+
+transform/pos = Vector2( -1.0748, -292.304 )
+transform/scale = Vector2( 0.308195, 0.353 )
+config/amount = 18
+config/lifetime = 3.2
+config/process_mode = 1
+config/half_extents = Vector2( 170, 0 )
+config/local_space = false
+config/explosiveness = 0.92
+params/direction = 0.0
+params/spread = 0.0
+params/linear_velocity = 410.01
+params/spin_velocity = 6.12
+params/orbit_velocity = 0.0
+params/gravity_direction = 0.0
+params/gravity_strength = 0.07
+params/radial_accel = -0.98
+params/tangential_accel = 0.0
+params/damping = 400.0
+params/initial_angle = 0.0
+params/initial_size = 0.91
+params/final_size = 2.61
+params/hue_variation = 0.0
+params/anim_speed_scale = 1.0
+params/anim_initial_pos = 0.0
+randomness/direction = -0.02
+randomness/spread = -2.23517e-08
+randomness/linear_velocity = 0.01
+randomness/spin_velocity = 0.31
+randomness/orbit_velocity = -0.01
+randomness/gravity_direction = 0.09
+randomness/gravity_strength = -0.01
+randomness/radial_accel = 0.09
+randomness/initial_angle = -0.08
+randomness/initial_size = -0.18
+randomness/final_size = 0.07
+randomness/hue_variation = 0.02
+randomness/anim_speed_scale = 0.12
+color/color = Color( 0.943542, 1, 0.710938, 1 )
+color/color_ramp = SubResource( 3 )
+
+[node name="flames" type="Particles2D" parent="Polygon2D"]
+
+transform/pos = Vector2( -0.137759, 10.296 )
+transform/scale = Vector2( 0.308195, 0.353 )
+config/amount = 66
+config/lifetime = 2.0
+config/time_scale = 5.0
+config/process_mode = 1
+params/direction = 0.0
+params/spread = 4.74
+params/linear_velocity = 23.0
+params/spin_velocity = 1.0
+params/orbit_velocity = 0.03
+params/gravity_direction = 0.0
+params/gravity_strength = 0.0
+params/radial_accel = 0.0
+params/tangential_accel = 0.0
+params/damping = 0.0
+params/initial_angle = 69.09
+params/initial_size = 10.0
+params/final_size = 1.0
+params/hue_variation = 0.07
+params/anim_speed_scale = 1.0
+params/anim_initial_pos = 0.0
+randomness/direction = 0.11
+randomness/spread = 1.0
+randomness/linear_velocity = 0.37
+randomness/spin_velocity = 0.37
+randomness/gravity_direction = -0.27
+randomness/gravity_strength = 0.03
+randomness/damping = 0.05
+randomness/initial_size = 1.0
+randomness/final_size = -0.13
+randomness/hue_variation = 0.07
+color/color = Color( 0.199753, 0.911048, 0.964844, 1 )
+color/color_ramp = SubResource( 2 )
+
+[node name="shape" type="Polygon2D" parent="."]
+
+transform/pos = Vector2( 0, 9 )
+polygon = Vector2Array( -0.0748024, -10.3036, -10.0748, 19.6964, -0.0748024, 10.6964, 9.9252, 19.6964 )
+uv = Vector2Array(  )
+color = Color( 1, 1, 1, 1 )
+vertex_colors = ColorArray(  )
+offset = Vector2( 0, 0 )
+texture/texture = null
+texture/offset = Vector2( 0, 0 )
+texture/scale = Vector2( 1, 1 )
+texture/rotation = 0.0
+invert/enable = false
+invert/border = 100.0
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+
+transform/pos = Vector2( 0.5, 14 )
+transform/scale = Vector2( 0.328125, 0.46875 )
+input/pickable = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 1.0
+custom_integrator = false
+continuous_cd = 0
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+velocity/linear = Vector2( 0, 0 )
+velocity/angular = 0.0
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+[node name="RigidBody2D1" type="RigidBody2D" parent="."]
+
+transform/pos = Vector2( 0.5, 14 )
+transform/scale = Vector2( 0.328125, 0.46875 )
+input/pickable = false
+collision/layers = 1
+collision/mask = 1
+mode = 0
+mass = 1.0
+friction = 1.0
+bounce = 0.0
+gravity_scale = 1.0
+custom_integrator = false
+continuous_cd = 0
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = true
+velocity/linear = Vector2( 0, 0 )
+velocity/angular = 0.0
+damp_override/linear = -1.0
+damp_override/angular = -1.0
+
+

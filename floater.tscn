@@ -1,0 +1,128 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://assets/scripts/engine.gd" type="Script" id=1]
+[ext_resource path="res://assets/levels/Rocket.gd" type="Script" id=2]
+[ext_resource path="res://addons/goutte.camera.trackball/trackball_camera.gd" type="Script" id=3]
+
+[sub_resource type="CapsuleMesh" id=1]
+
+[sub_resource type="BoxShape" id=2]
+extents = Vector3( 2.8396, 1.11277, 11.0785 )
+
+[sub_resource type="SphereMesh" id=3]
+height = 1.0
+
+[sub_resource type="CubeMesh" id=4]
+
+[node name="Rocket" type="RigidBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -24.419, 7.71739, 0.308811 )
+collision_layer = 2
+mass = 10.0
+gravity_scale = 2.0
+continuous_cd = true
+linear_damp = 0.1
+angular_damp = 0.0
+script = ExtResource( 2 )
+node = NodePath(".")
+
+[node name="Camera2" type="Camera" parent="."]
+transform = Transform( 0.596463, 0.478993, -0.644048, 0, 0.802411, 0.596772, 0.802641, -0.355952, 0.478608, -15.2032, 13.049, 12.3178 )
+visible = false
+script = ExtResource( 3 )
+stabilize_horizon = true
+joystick_threshold = 0.2
+action_enabled = false
+
+[node name="Mesh_Rocket_Body" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 3.20398, -6.65557e-09 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+shape = SubResource( 2 )
+
+[node name="Spatial" type="Spatial" parent="."]
+
+[node name="Engine_4" type="Spatial" parent="Spatial"]
+transform = Transform( 0.866024, 0.5, 0, -0.499999, 0.866025, 0, 0, 0, 1, -2, 0, 8 )
+script = ExtResource( 1 )
+key_thrust = "Trigger_Right"
+key_vertical_positive_rotation = "DPad_Up"
+key_vertical_negative_rotation = "DPad_Down"
+key_horizontal_positive_rotation = "DPad_Right"
+key_horizontal_negative_rotation = "DPad_Left"
+thruster_strength_multipler = 80
+rocket_node = NodePath("../..")
+
+[node name="TopIndicator" type="MeshInstance" parent="Spatial/Engine_4"]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.594775, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="Mesh" type="MeshInstance" parent="Spatial/Engine_4"]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="Engine_5" type="Spatial" parent="Spatial"]
+transform = Transform( 0.866024, -0.5, 0, 0.499999, 0.866025, 0, 0, 0, 1, 2, 0, 8 )
+script = ExtResource( 1 )
+key_thrust = "Trigger_Right"
+key_vertical_positive_rotation = "DPad_Up"
+key_vertical_negative_rotation = "DPad_Down"
+key_horizontal_positive_rotation = "DPad_Right"
+key_horizontal_negative_rotation = "DPad_Left"
+thruster_strength_multipler = 80
+rocket_node = NodePath("../..")
+
+[node name="TopIndicator" type="MeshInstance" parent="Spatial/Engine_5"]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.594775, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="Mesh" type="MeshInstance" parent="Spatial/Engine_5"]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="Engine_7" type="Spatial" parent="Spatial"]
+transform = Transform( 0.866024, 0.5, 0, -0.499999, 0.866025, 0, 0, 0, 1, -2, 0, -8 )
+script = ExtResource( 1 )
+key_thrust = "Trigger_Right"
+key_vertical_positive_rotation = "DPad_Up"
+key_vertical_negative_rotation = "DPad_Down"
+key_horizontal_positive_rotation = "DPad_Right"
+key_horizontal_negative_rotation = "DPad_Left"
+thruster_strength_multipler = 80
+rocket_node = NodePath("../..")
+
+[node name="TopIndicator" type="MeshInstance" parent="Spatial/Engine_7"]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.594775, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="Mesh" type="MeshInstance" parent="Spatial/Engine_7"]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="Engine_6" type="Spatial" parent="Spatial"]
+transform = Transform( 0.866024, -0.5, 0, 0.499999, 0.866025, 0, 0, 0, 1, 2, 0, -8 )
+script = ExtResource( 1 )
+key_thrust = "Trigger_Right"
+key_vertical_positive_rotation = "DPad_Up"
+key_vertical_negative_rotation = "DPad_Down"
+key_horizontal_positive_rotation = "DPad_Right"
+key_horizontal_negative_rotation = "DPad_Left"
+thruster_strength_multipler = 80
+rocket_node = NodePath("../..")
+
+[node name="TopIndicator" type="MeshInstance" parent="Spatial/Engine_6"]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.594775, 0 )
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="Mesh" type="MeshInstance" parent="Spatial/Engine_6"]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
+mesh = SubResource( 4 )
+material/0 = null

@@ -1,0 +1,60 @@
+[gd_scene load_steps=5 format=2]
+
+[sub_resource type="BoxShape" id=1]
+
+[sub_resource type="CubeMesh" id=2]
+
+[sub_resource type="SpatialMaterial" id=3]
+albedo_color = Color( 0.133333, 0.498039, 0.792157, 1 )
+
+[sub_resource type="CylinderMesh" id=4]
+
+[node name="fat_cart" type="VehicleBody"]
+transform = Transform( 0.669571, 0, -0.742748, 0, 1, 0, 0.742748, 0, 0.669571, 4.52376, 2.91589, -0.538926 )
+steering = 2.97
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+mesh = SubResource( 2 )
+material/0 = SubResource( 3 )
+
+[node name="VehicleWheel" type="VehicleWheel" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, -1.01869, -1.24392 )
+wheel_radius = 1.05
+wheel_rest_length = 0.5
+suspension_stiffness = 8.0
+
+[node name="MeshInstance" type="MeshInstance" parent="VehicleWheel"]
+transform = Transform( -3.93403e-08, -0.107, 0, 0.9, -4.67712e-09, 0, 0, 0, 0.9, 0, 0, 0 )
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="VehicleWheel3" type="VehicleWheel" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.01833, 2.417 )
+brake = 1.0
+steering = -0.73
+use_as_traction = true
+use_as_steering = true
+wheel_radius = 1.214
+wheel_rest_length = 0.5
+wheel_friction_slip = 0.708
+suspension_travel = 1.637
+suspension_stiffness = 9.849
+
+[node name="MeshInstance" type="MeshInstance" parent="VehicleWheel3"]
+transform = Transform( -3.93403e-08, -0.107, 0, 0.9, -4.67712e-09, 0, 0, 0, 0.9, 0, 0, 0 )
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="VehicleWheel2" type="VehicleWheel" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, -1.01869, -1.24392 )
+wheel_radius = 1.05
+wheel_rest_length = 0.5
+suspension_stiffness = 8.0
+
+[node name="MeshInstance" type="MeshInstance" parent="VehicleWheel2"]
+transform = Transform( -3.93403e-08, -0.107, 0, 0.9, -4.67712e-09, 0, 0, 0, 0.9, 0, 0, 0 )
+mesh = SubResource( 4 )
+material/0 = null

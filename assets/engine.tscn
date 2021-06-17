@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/scripts/engine2.gd" type="Script" id=1]
+
+[sub_resource type="SphereMesh" id=1]
+height = 1.0
+
+[sub_resource type="CubeMesh" id=2]
+
+[node name="Engine" type="Spatial"]
+transform = Transform( 0.999998, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+script = ExtResource( 1 )
+key_thrust = "Trigger_Right"
+key_vertical_positive_rotation = "DPad_Up"
+key_vertical_negative_rotation = "DPad_Down"
+key_horizontal_positive_rotation = "DPad_Right"
+key_horizontal_negative_rotation = "DPad_Left"
+thruster_strength_multipler = 80
+rocket_node = NodePath("../..")
+
+[node name="TopIndicator" type="MeshInstance" parent="."]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.0589058, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="Mesh" type="MeshInstance" parent="."]
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, -0.535869, 0 )
+mesh = SubResource( 2 )
+material/0 = null
